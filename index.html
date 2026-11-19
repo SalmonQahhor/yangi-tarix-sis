@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="O‘zbekistonning eng yangi tarixi — 400 ta akademik testlar platformasi. 30 talik bloklar va 25 talik random imtihon rejimi." />
+  <title>O‘zbekistonning Eng Yangi Tarixi — Interaktiv Quiz</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231d4ed8'/%3E%3Cstop offset='100%25' stop-color='%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Navigation -->
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <button type="button" class="brand" id="btn-logo-home" aria-label="Bosh sahifaga qaytish">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <strong>O‘zbekiston Tarixi</strong>
+            <small>Akademik Quiz Platformasi</small>
+          </span>
+        </button>
+
+        <div class="topbar-actions">
+          <div class="stat-pill" id="header-progress-pill" title="Umumiy o‘zlashtirish ko‘rsatkichi">
+            <span class="dot-emerald"></span>
+            <span id="header-solved-text">0 / 400 savol</span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm hidden" id="btn-nav-home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Bosh sahifa</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Loading State -->
+        <section id="view-loading" class="loading-box" aria-live="polite">
+          <div class="spinner"></div>
+          <p>Testlar bazasi yuklanmoqda...</p>
+        </section>
+
+        <!-- Error State -->
+        <section id="view-error" class="error-box hidden" role="alert">
+          <h2>Ma’lumotlarni yuklashda xatolik</h2>
+          <p id="error-message">questions.json fayli topilmadi.</p>
+          <button type="button" class="btn btn-royal" onclick="location.reload()">Qayta urinish</button>
+        </section>
+
+        <!-- VIEW 1: HOME DASHBOARD -->
+        <section id="view-home" class="view hidden">
+          <!-- Hero & Exam Mode + Overall Stats -->
+          <div class="dashboard-grid">
+            <!-- Exam Mode Card -->
+            <div class="card hero-card">
+              <div class="hero-badge">
+                <span class="badge-emerald">Imtihon simulyatori</span>
+                <span class="badge-royal">400 ta savol bazasi</span>
+              </div>
+              <h1>O‘zbekistonning eng yangi tarixi</h1>
+              <p class="hero-desc">
+                X.X. Matyaqubov o‘quv qo‘llanmasi asosida tuzilgan 13 ta mavzu bo‘yicha 400 ta akademik test.
+                Tartibli 30 talik bloklarda mashq qiling yoki 25 ta tasodifiy savoldan iborat real imtihon topshiring.
+              </p>
+
+              <div class="exam-highlight">
+                <div class="exam-info">
+                  <div class="exam-icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Imtihon rejimi (25 ta random savol)</h3>
+                    <p>Barcha mavzulardan tasodifiy 25 ta savol • Yakunda diagrammalar va xatolar tahlili</p>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-emerald btn-lg" id="btn-start-exam">
+                  <span>Imtihonni boshlash</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Overall Progress & Chart Card -->
+            <aside class="card stats-overview-card" aria-label="Umumiy statistika">
+              <div class="card-head-row">
+                <h2>Umumiy statistika</h2>
+                <button type="button" class="btn-link-muted" id="btn-reset-stats" title="Saqlangan natijalarni tozalash">Tozalash</button>
+              </div>
+
+              <div class="overview-chart-wrap">
+                <div id="home-donut-container" class="donut-box"></div>
+                <div class="overview-metrics">
+                  <div class="metric-item">
+                    <span class="metric-label">Yakunlangan bloklar</span>
+                    <strong class="metric-value text-royal" id="stat-blocks-done">0 / 14</strong>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">O‘rtacha aniqlik</span>
+                    <strong class="metric-value text-emerald" id="stat-accuracy">0%</strong>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">Imtihon urinishlari</span>
+                    <strong class="metric-value" id="stat-exams-count">0 ta</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="topic-mini-bar">
+                <div class="bar-label-row">
+                  <span>Baza qamrovi</span>
+                  <span id="stat-coverage-pct">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="stat-coverage-bar" style="width: 0%"></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Blocks Section -->
+          <div class="blocks-section">
+            <div class="section-header">
+              <div>
+                <h2>Test bloklari (30 tadan tartibli)</h2>
+                <p>400 ta savol ketma-ketlikda 14 ta alohida blokga ajratilgan</p>
+              </div>
+
+              <div class="blocks-controls">
+                <div class="search-input-wrap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input type="search" id="block-search" placeholder="Blok yoki mavzu bo‘yicha qidirish..." aria-label="Blok yoki mavzu bo‘yicha qidirish" />
+                </div>
+
+                <div class="filter-pills" role="tablist" aria-label="Bloklarni filtrlash">
+                  <button type="button" class="pill active" data-filter="all">Barchasi</button>
+                  <button type="button" class="pill" data-filter="completed">Ishlangan</button>
+                  <button type="button" class="pill" data-filter="uncompleted">Yangi</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="blocks-grid" class="blocks-grid"></div>
+          </div>
+        </section>
+
+        <!-- VIEW 2: QUIZ WORKSPACE -->
+        <section id="view-quiz" class="view hidden">
+          <div class="quiz-header card">
+            <div class="quiz-meta">
+              <span class="mode-tag" id="quiz-mode-badge">1-blok (1–30)</span>
+              <span class="quiz-counter" id="quiz-counter-text">Savol 1 / 30</span>
+            </div>
+
+            <div class="quiz-tools">
+              <div class="timer-badge" id="quiz-timer" aria-label="Sarflangan vaqt">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span id="timer-display">00:00</span>
+              </div>
+              <button type="button" class="btn btn-emerald btn-sm" id="btn-finish-quiz">
+                Testni yakunlash
+              </button>
+            </div>
+          </div>
+
+          <div class="progress-track quiz-progress-bar">
+            <div class="progress-fill" id="quiz-progress-fill" style="width: 0%"></div>
+          </div>
+
+          <div class="quiz-layout">
+            <!-- Question Card -->
+            <article class="card question-card">
+              <div class="question-top">
+                <span class="topic-badge" id="question-topic">1-MAVZU</span>
+                <span class="qid-badge" id="question-original-id">Baza #1</span>
+              </div>
+
+              <h2 class="question-text" id="question-text">Savol matni yuklanmoqda...</h2>
+
+              <div class="options-list" id="options-list" role="radiogroup" aria-label="Javob variantlari"></div>
+
+              <div id="instant-feedback" class="instant-feedback hidden" aria-live="polite"></div>
+
+              <div class="question-nav-footer">
+                <button type="button" class="btn btn-outline" id="btn-prev-q">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                  </svg>
+                  <span>Oldingi</span>
+                </button>
+
+                <span class="kbd-hint">Klaviatura: A, B, C, D yoki ← →</span>
+
+                <button type="button" class="btn btn-royal" id="btn-next-q">
+                  <span>Keyingi</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </button>
+              </div>
+            </article>
+
+            <!-- Question Palette Sidebar -->
+            <aside class="card palette-card" aria-label="Savollar xaritasi">
+              <div class="palette-head">
+                <h3>Savollar xaritasi</h3>
+                <span id="palette-answered-count">0 / 30</span>
+              </div>
+              <div id="question-palette" class="question-palette"></div>
+              <div class="palette-legend">
+                <span><i class="leg-dot current"></i> Joriy</span>
+                <span><i class="leg-dot answered"></i> Belgilangan</span>
+                <span><i class="leg-dot empty"></i> Bo‘sh</span>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- VIEW 3: RESULTS & MISTAKE ANALYSIS -->
+        <section id="view-results" class="view hidden">
+          <!-- Result Summary Banner -->
+          <div class="card result-hero">
+            <div class="result-hero-left">
+              <span class="result-grade-pill" id="res-grade-badge">A’lo natija</span>
+              <h1 id="res-title">Imtihon natijalari</h1>
+              <p id="res-subtitle">25 ta tasodifiy savol bo‘yicha yakuniy statistika va xatolar tahlili</p>
+            </div>
+            <div class="result-hero-actions">
+              <button type="button" class="btn btn-emerald" id="btn-retry-wrong">
+                Xatolarni qayta ishlash
+              </button>
+              <button type="button" class="btn btn-royal" id="btn-retake-same">
+                Qayta topshirish
+              </button>
+              <button type="button" class="btn btn-outline" id="btn-results-home">
+                Bosh sahifa
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="card kpi-card kpi-emerald">
+              <span class="kpi-label">To‘g‘ri javoblar</span>
+              <strong class="kpi-val" id="res-correct-count">0</strong>
+              <span class="kpi-sub" id="res-correct-pct">0% aniqlik</span>
+            </div>
+            <div class="card kpi-card kpi-danger">
+              <span class="kpi-label">Noto‘g‘ri javoblar</span>
+              <strong class="kpi-val" id="res-wrong-count">0</strong>
+              <span class="kpi-sub">Xato belgilangan</span>
+            </div>
+            <div class="card kpi-card kpi-neutral">
+              <span class="kpi-label">Belgilanmagan</span>
+              <strong class="kpi-val" id="res-skipped-count">0</strong>
+              <span class="kpi-sub">O‘tkazib yuborilgan</span>
+            </div>
+            <div class="card kpi-card kpi-royal">
+              <span class="kpi-label">Sarflangan vaqt</span>
+              <strong class="kpi-val" id="res-time-spent">00:00</strong>
+              <span class="kpi-sub" id="res-avg-speed">O‘rtacha tezlik</span>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="chart-head">
+                <h3>Natijalar diagrammasi</h3>
+                <span class="chart-sub">Umumiy ulushlar taqsimoti</span>
+              </div>
+              <div class="donut-analytics-wrap">
+                <div id="res-donut-container" class="donut-box-lg"></div>
+                <ul class="donut-legend-list" id="res-donut-legend"></ul>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <div class="chart-head">
+                <h3>Mavzular bo‘yicha ko‘rsatkich</h3>
+                <span class="chart-sub">Har bir mavzudagi o‘zlashtirish foizi</span>
+              </div>
+              <div id="res-topic-bars" class="topic-bars-list"></div>
+            </div>
+          </div>
+
+          <!-- Mistake Analysis Section -->
+          <div class="card analysis-section">
+            <div class="analysis-header">
+              <div>
+                <h2>Xatolar tahlili va javoblar sharhi</h2>
+                <p>Noto‘g‘ri belgilangan savollar va ularning to‘g‘ri yechimlari</p>
+              </div>
+              <div class="filter-pills" id="analysis-filters">
+                <button type="button" class="pill active" data-afilter="wrong">Faqat xatolar (<span id="count-tab-wrong">0</span>)</button>
+                <button type="button" class="pill" data-afilter="all">Barchasi (<span id="count-tab-all">0</span>)</button>
+                <button type="button" class="pill" data-afilter="correct">To‘g‘ri (<span id="count-tab-correct">0</span>)</button>
+              </div>
+            </div>
+
+            <div id="analysis-list" class="analysis-list"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Bottom Watermark Footer -->
+    <footer class="app-footer">
+      <div class="container">
+        <p class="watermark">Öğıloy tomonidan tayyorlandi</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
